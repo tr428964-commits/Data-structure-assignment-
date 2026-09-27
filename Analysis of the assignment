@@ -1,0 +1,842 @@
+1. AIM
+
+To implement and compare different collision resolution techniques in hashing, namely Linear Probing, Quadratic Probing and Double Hashing, using the given railway booking IDs.
+
+
+---
+
+2. OBJECTIVE
+
+
+
+The objectives of this assignment are:
+
+1. To implement a hash table using different collision resolution techniques.
+
+
+2. To insert the given railway booking IDs into the hash table.
+
+
+3. To implement Linear Probing, Quadratic Probing and Double Hashing.
+
+
+4. To search for existing and non-existing booking IDs.
+
+
+5. To record the number of probes required during searching.
+
+
+6. To calculate the load factor of the hash table.
+
+
+7. To compare the performance of the three collision resolution techniques.
+
+
+8. To analyse their time and space complexity.
+
+
+
+
+---
+
+3. GIVEN INPUT
+
+
+
+The railway booking IDs given in the question are:
+
+23, 43, 13, 33, 53, 63, 73
+
+The question requires the use of a suitable hash-table size and implementation of:
+
+Linear Probing
+
+Quadratic Probing
+
+Double Hashing
+
+
+It also requires searching for existing and non-existing IDs, recording probes, calculating load factor and comparing the techniques.
+
+
+---
+
+4. HASH TABLE DESIGN
+
+
+
+For this assignment, a hash table of size 11 is selected.
+
+Since 11 is a prime number, it is suitable for hashing and also works well with quadratic probing and double hashing.
+
+Primary Hash Function
+
+[
+h(k)=k%11
+]
+
+where "k" is the booking ID.
+
+For Linear Probing
+
+[
+h_i(k)=(h(k)+i)%11
+]
+
+For Quadratic Probing
+
+[
+h_i(k)=(h(k)+i^2)%11
+]
+
+For Double Hashing
+
+First hash function:
+
+[
+h_1(k)=k%11
+]
+
+Second hash function:
+
+[
+h_2(k)=7-(k%7)
+]
+
+Probe position:
+
+[
+h_i(k)=(h_1(k)+i\times h_2(k))%11
+]
+
+where "i = 0, 1, 2, ..."
+
+
+---
+
+5. LINEAR PROBING
+
+
+
+5.1 Algorithm
+
+1. Calculate the hash value using "key % 11".
+
+
+2. Check the calculated position.
+
+
+3. If the position is empty, insert the key.
+
+
+4. If a collision occurs, check the next position.
+
+
+5. Continue until an empty position is found.
+
+
+6. For searching, follow the same probing sequence until the key is found or an empty position is reached.
+
+
+
+
+---
+
+5.2 C Program – Linear Probing
+
+#include <stdio.h>
+
+#define SIZE 11
+
+void linearProbing(int a[], int n)
+{
+int table[SIZE];
+int i, key, index, pos;
+
+for (i = 0; i < SIZE; i++)  
+    table[i] = -1;  
+
+for (i = 0; i < n; i++)  
+{  
+    key = a[i];  
+    index = key % SIZE;  
+    pos = index;  
+
+    while (table[pos] != -1)  
+        pos = (pos + 1) % SIZE;  
+
+    table[pos] = key;  
+}  
+
+printf("\nLinear Probing:\n");  
+
+for (i = 0; i < SIZE; i++)  
+    printf("Index %d : %d\n", i, table[i]);
+
+}
+
+int main()
+{
+int a[] = {23, 43, 13, 33, 53, 63, 73};
+
+linearProbing(a, 7);  
+
+return 0;
+
+}
+
+
+---
+
+5.3 Linear Probing Calculation
+
+Booking ID| Hash Value "k % 11"| Probes| Final Position
+23| 1| 1| 1
+43| 10| 1| 10
+13| 2| 1| 2
+33| 0| 1| 0
+53| 9| 1| 9
+63| 8| 1| 8
+73| 7| 1| 7
+
+For this particular input, no collision occurs because all the calculated positions are different.
+
+
+---
+
+5.4 Final Hash Table – Linear Probing
+
+Index| Value
+0| 33
+1| 23
+2| 13
+3| Empty
+4| Empty
+5| Empty
+6| Empty
+7| 73
+8| 63
+9| 53
+10| 43
+
+
+---
+
+6. QUADRATIC PROBING
+
+
+
+6.1 Algorithm
+
+1. Calculate the initial hash value using "key % 11".
+
+
+2. Check the calculated position.
+
+
+3. If it is empty, insert the key.
+
+
+4. If a collision occurs, use the quadratic probing formula.
+
+
+5. Check positions using "h(k) + i²".
+
+
+6. Continue until an empty position is found.
+
+
+7. During searching, follow the same sequence.
+
+
+
+
+---
+
+6.2 C Program – Quadratic Probing
+
+#include <stdio.h>
+
+#define SIZE 11
+
+void quadraticProbing(int a[], int n)
+{
+int table[SIZE];
+int i, key, index, pos, j;
+
+for (i = 0; i < SIZE; i++)  
+    table[i] = -1;  
+
+for (i = 0; i < n; i++)  
+{  
+    key = a[i];  
+    index = key % SIZE;  
+    j = 0;  
+
+    while (1)  
+    {  
+        pos = (index + j * j) % SIZE;  
+
+        if (table[pos] == -1)  
+        {  
+            table[pos] = key;  
+            break;  
+        }  
+
+        j++;  
+    }  
+}  
+
+printf("\nQuadratic Probing:\n");  
+
+for (i = 0; i < SIZE; i++)  
+    printf("Index %d : %d\n", i, table[i]);
+
+}
+
+int main()
+{
+int a[] = {23, 43, 13, 33, 53, 63, 73};
+
+quadraticProbing(a, 7);  
+
+return 0;
+
+}
+
+
+---
+
+6.3 Quadratic Probing Calculation
+
+Since every key gets a different initial hash position, no collision occurs.
+
+Booking ID| Hash Value| Probes| Final Position
+23| 1| 1| 1
+43| 10| 1| 10
+13| 2| 1| 2
+33| 0| 1| 0
+53| 9| 1| 9
+63| 8| 1| 8
+73| 7| 1| 7
+
+
+---
+
+6.4 Final Hash Table – Quadratic Probing
+
+Index| Value
+0| 33
+1| 23
+2| 13
+3| Empty
+4| Empty
+5| Empty
+6| Empty
+7| 73
+8| 63
+9| 53
+10| 43
+
+
+---
+
+7. DOUBLE HASHING
+
+
+
+7.1 Algorithm
+
+1. Calculate the first hash value using "k % 11".
+
+
+2. Calculate the second hash value using "7 - (k % 7)".
+
+
+3. Check the position obtained from the first hash function.
+
+
+4. If collision occurs, use the second hash function to calculate the next position.
+
+
+5. Continue until an empty position is found.
+
+
+6. Use the same probing sequence for searching.
+
+
+
+
+---
+
+7.2 C Program – Double Hashing
+
+#include <stdio.h>
+
+#define SIZE 11
+
+void doubleHashing(int a[], int n)
+{
+int table[SIZE];
+int i, key, h1, h2, pos, j;
+
+for (i = 0; i < SIZE; i++)  
+    table[i] = -1;  
+
+for (i = 0; i < n; i++)  
+{  
+    key = a[i];  
+
+    h1 = key % SIZE;  
+    h2 = 7 - (key % 7);  
+
+    j = 0;  
+
+    while (1)  
+    {  
+        pos = (h1 + j * h2) % SIZE;  
+
+        if (table[pos] == -1)  
+        {  
+            table[pos] = key;  
+            break;  
+        }  
+
+        j++;  
+    }  
+}  
+
+printf("\nDouble Hashing:\n");  
+
+for (i = 0; i < SIZE; i++)  
+    printf("Index %d : %d\n", i, table[i]);
+
+}
+
+int main()
+{
+int a[] = {23, 43, 13, 33, 53, 63, 73};
+
+doubleHashing(a, 7);  
+
+return 0;
+
+}
+
+
+---
+
+7.3 Double Hashing Calculation
+
+ID| "h1(k)"| "h2(k)"| Probes| Final Position
+23| 1| 5| 1| 1
+43| 10| 6| 1| 10
+13| 2| 1| 1| 2
+33| 0| 2| 1| 0
+53| 9| 3| 1| 9
+63| 8| 7| 1| 8
+73| 7| 4| 1| 7
+
+Again, there are no collisions for this particular input and table size.
+
+
+---
+
+7.4 Final Hash Table – Double Hashing
+
+Index| Value
+0| 33
+1| 23
+2| 13
+3| Empty
+4| Empty
+5| Empty
+6| Empty
+7| 73
+8| 63
+9| 53
+10| 43
+
+
+---
+
+8. SEARCH OPERATION
+
+
+
+The assignment requires searching for both an existing and a non-existing booking ID and recording the number of probes.
+
+For demonstration:
+
+Existing ID: 43
+Non-existing ID: 99
+
+
+---
+
+8.1 Search for Existing ID – 43
+
+[
+43%11=10
+]
+
+Index 10 contains "43".
+
+Therefore:
+
+Result: Found
+
+Number of probes = 1
+
+This is the same for all three methods because no collision occurs at index 10.
+
+
+---
+
+8.2 Search for Non-existing ID – 99
+
+[
+99%11=0
+]
+
+Index 0 contains "33", so for a non-existing search, the appropriate probing sequence must continue until an empty position is reached.
+
+For this particular table, using the same probing rules:
+
+Linear Probing
+
+Positions:
+
+"0 → 1 → 2 → 3"
+
+Index 3 is empty.
+
+Therefore:
+
+99 = Not Found
+
+Probes = 4
+
+Quadratic Probing
+
+Positions:
+
+"0 → 1 → 4"
+
+Index 4 is empty.
+
+Therefore:
+
+99 = Not Found
+
+Probes = 3
+
+Double Hashing
+
+For 99:
+
+[
+h_1(99)=99%11=0
+]
+
+[
+h_2(99)=7-(99%7)=7-1=6
+]
+
+Positions:
+
+"0 → 6"
+
+Index 6 is empty.
+
+Therefore:
+
+99 = Not Found
+
+Probes = 2
+
+
+---
+
+9. SEARCH RESULT TABLE
+
+
+
+Method| Search ID| Result| Number of Probes
+Linear Probing| 43| Found| 1
+Linear Probing| 99| Not Found| 4
+Quadratic Probing| 43| Found| 1
+Quadratic Probing| 99| Not Found| 3
+Double Hashing| 43| Found| 1
+Double Hashing| 99| Not Found| 2
+
+This shows that although insertion produced no collisions for the given keys, the probing technique can still affect the number of probes required for unsuccessful searches.
+
+
+---
+
+10. LOAD FACTOR
+
+
+
+The load factor is given by:
+
+[
+\alpha=\frac{n}{m}
+]
+
+where:
+
+"n" = Number of elements stored
+
+"m" = Size of hash table
+
+
+Here:
+
+[
+n=7
+]
+
+[
+m=11
+]
+
+Therefore,
+
+[
+\alpha=\frac{7}{11}
+]
+
+[
+\alpha=0.636
+]
+
+Therefore, the load factor is approximately:
+
+0.636 or 63.6%
+
+A higher load factor generally increases the probability of collisions and the number of probes required for insertion and searching.
+
+
+---
+
+11. TIME AND SPACE COMPLEXITY
+
+
+
+Operation| Linear Probing| Quadratic Probing| Double Hashing
+Average Insertion| O(1)| O(1)| O(1)
+Average Search| O(1)| O(1)| O(1)
+Worst-case Insertion| O(n)| O(n)| O(n)
+Worst-case Search| O(n)| O(n)| O(n)
+Space Complexity| O(m)| O(m)| O(m)
+
+Explanation
+
+In the average case, hashing provides approximately constant-time insertion and searching.
+
+In the worst case, many collisions may occur and the operation can take linear time.
+
+All three methods require a hash table, so their space requirement is O(m).
+
+
+
+---
+
+12. COMPARISON OF COLLISION RESOLUTION TECHNIQUES
+
+
+
+Feature| Linear Probing| Quadratic Probing| Double Hashing
+Basic idea| Checks next consecutive position| Uses quadratic increments| Uses a second hash function
+Implementation| Simple| Moderate| More complex
+Clustering| More likely to cause primary clustering| Reduces primary clustering| Reduces clustering significantly
+Average search| O(1)| O(1)| O(1)
+Worst-case search| O(n)| O(n)| O(n)
+Space| O(m)| O(m)| O(m)
+Extra hash function| No| No| Yes
+Performance for given insertion data| Same| Same| Same
+
+
+---
+
+13. ANALYSIS OF COLLISIONS
+
+
+
+For the selected hash table size of 11:
+
+[
+h(k)=k%11
+]
+
+The hash values are:
+
+23 → 1
+
+43 → 10
+
+13 → 2
+
+33 → 0
+
+53 → 9
+
+63 → 8
+
+73 → 7
+
+
+All seven values are different.
+
+Therefore, no collision occurs during insertion for this particular dataset.
+
+This is an important observation from the actual execution. The three collision-resolution methods therefore produce the same final table for insertion.
+
+However, the programs are implemented to handle collisions if they occur with other inputs.
+
+
+---
+
+14. EFFECT OF LOAD FACTOR ON PERFORMANCE
+
+
+
+Load factor represents how full the hash table is.
+
+[
+Load\ Factor=\frac{Number\ of\ Elements}{Table\ Size}
+]
+
+For this assignment:
+
+[
+Load\ Factor=0.636
+]
+
+As the load factor increases:
+
+1. The table becomes more occupied.
+
+
+2. The probability of collisions increases.
+
+
+3. More probes may be required.
+
+
+4. Search and insertion can become slower.
+
+
+5. At very high load factors, hashing performance can approach the worst case.
+
+
+
+Therefore, maintaining a reasonable load factor is important for efficient hashing.
+
+
+---
+
+15. OBSERVED RESULTS
+
+
+
+Insertion
+
+For the given input:
+
+"23, 43, 13, 33, 53, 63, 73"
+
+all three techniques require only one probe per insertion, because there are no collisions.
+
+Searching
+
+For the existing key "43", all methods find the key in one probe.
+
+For the non-existing key "99", the number of probes differs because the three methods follow different probing sequences.
+
+Method| Insertion Collisions| Search for 43| Search for 99
+Linear Probing| 0| 1 probe| 4 probes
+Quadratic Probing| 0| 1 probe| 3 probes
+Double Hashing| 0| 1 probe| 2 probes
+
+
+---
+
+16. ADVANTAGES AND DISADVANTAGES
+
+
+
+Linear Probing
+
+Advantages
+
+Very simple to implement.
+
+Easy to understand.
+
+Does not require a second hash function.
+
+
+Disadvantages
+
+Can cause primary clustering.
+
+Number of probes can increase when the table becomes full.
+
+
+
+---
+
+Quadratic Probing
+
+Advantages
+
+Reduces primary clustering compared with linear probing.
+
+Uses a simple mathematical probing sequence.
+
+
+Disadvantages
+
+More complex than linear probing.
+
+Depending on table size and load factor, it may not visit every table position.
+
+
+
+---
+
+Double Hashing
+
+Advantages
+
+Provides better distribution of keys.
+
+Reduces clustering.
+
+Uses a different probing sequence for different keys.
+
+
+Disadvantages
+
+Requires an additional hash function.
+
+Slightly more complex to implement.
+
+
+
+---
+
+17. CONCLUSION
+
+
+
+The three collision resolution techniques—Linear Probing, Quadratic Probing and Double Hashing—were implemented successfully using the given railway booking IDs.
+
+For the selected hash table size of 11, the given booking IDs produce different initial hash positions. Therefore, no collision occurs during insertion and all three techniques produce the same final hash table.
+
+During searching, different probing sequences are used. For the non-existing key 99, the number of probes differs between the three methods.
+
+The experiment demonstrates that the performance of a hashing technique depends on factors such as the hash function, table size, load factor and number of collisions. The implemented programs can also handle collisions when different input values produce the same hash position.
